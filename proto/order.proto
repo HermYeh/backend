@@ -1,0 +1,14 @@
+syntax = "proto3";
+package order;
+
+service Communication {
+    rpc SayHello (ClientRequest) returns (ServerResponse) ;
+ }
+ 
+ message ClientRequest{
+   string ordernumber=1;
+   string checkintime=2;
+  } 
+ message ServerResponse{
+    bool confirm=1;
+   }
