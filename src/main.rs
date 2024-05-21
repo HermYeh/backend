@@ -169,7 +169,7 @@ async fn load(my_data: Message) -> Result<impl warp::Reply, Infallible> {
   
   let message = Message { vector:total_orders};
  
-
+    
      
     Ok(warp::reply::json(&message))
 }
