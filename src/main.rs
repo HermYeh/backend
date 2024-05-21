@@ -1,6 +1,7 @@
 
 use log::info;
 use sqlite::{self, Row};
+use warp::reply::Reply;
 
 use std::net::{Shutdown,TcpListener, TcpStream};
 use std::{
@@ -127,7 +128,7 @@ use std::collections::HashMap;
 use warp::{
     http::{Response, StatusCode},
 };
-
+use warp::http::header::{HeaderMap, HeaderValue};
 #[derive(Deserialize, Serialize)]
 struct MyObject {
     key1: String,
@@ -169,12 +170,20 @@ async fn load(my_data: Message) -> Result<impl warp::Reply, Infallible> {
   
   let message = Message { vector:total_orders};
   println!("send data: {:?}", &message.vector);
-    
-     
-    Ok(warp::reply::json(&message))
+  let reply =  warp::reply::json(&message);
+  let mut response = reply.into_response();
+  let headers = response.headers_mut();
+  headers.insert(warp::http::header::ACCESS_CONTROL_ALLOW_ORIGIN, HeaderValue::from_static("*"));
+  Ok(response)
 }
 async fn handle_post(my_data: Message) -> Result<impl warp::Reply, Infallible> {
     println!("Received data: {:?}", my_data.vector);
     handle_connection(my_data.vector.clone());
-    Ok(warp::reply::json(&my_data))
+    
+  
+    let reply =  warp::reply::json(&my_data);
+    let mut response = reply.into_response();
+    let headers = response.headers_mut();
+    headers.insert(warp::http::header::ACCESS_CONTROL_ALLOW_ORIGIN, HeaderValue::from_static("*"));
+    Ok(response)
 }
