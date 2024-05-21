@@ -1,6 +1,7 @@
 
 use log::info;
 use sqlite::{self, Row};
+
 use std::net::{Shutdown,TcpListener, TcpStream};
 use std::{
     io::{ErrorKind, Read, Write},
@@ -140,8 +141,7 @@ async fn main() {
         .and(warp::path("data"))
         .and(warp::body::json())
         .and_then(handle_post);
-    
-    let query = warp::get()
+    let query = warp::post()
         .and(warp::path("load"))
        .and(warp::body::json())
         .and_then(load);
@@ -152,7 +152,7 @@ async fn main() {
     
 }
 async fn load(my_data: Message) -> Result<impl warp::Reply, Infallible> {
-
+    
     println!("Received data: {:?}", my_data.vector);
     
     let mut total_orders=Vec::new();
@@ -168,7 +168,7 @@ async fn load(my_data: Message) -> Result<impl warp::Reply, Infallible> {
 
   
   let message = Message { vector:total_orders};
- 
+  println!("send data: {:?}", &message.vector);
     
      
     Ok(warp::reply::json(&message))
