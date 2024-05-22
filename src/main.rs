@@ -138,17 +138,17 @@ struct MyObject {
 #[tokio::main]
 async fn main() {
     // POST /data
-    let data_route = warp::post()
+    let data_route = warp::any()
         .and(warp::path("data"))
         .and(warp::body::json())
         .and_then(handle_post);
-    let query = warp::post()
+    let query = warp::any()
         .and(warp::path("load"))
        .and(warp::body::json())
         .and_then(load);
         
         warp::serve(data_route.or(query))
-        .run(([127, 0, 0, 1], 3030))
+        .run(([0, 0, 0, 0], 3030))
         .await;
     
 }
@@ -170,20 +170,20 @@ async fn load(my_data: Message) -> Result<impl warp::Reply, Infallible> {
   
   let message = Message { vector:total_orders};
   println!("send data: {:?}", &message.vector);
-  let reply =  warp::reply::json(&message);
-  let mut response = reply.into_response();
+/*   let reply =  warp::reply::json(&message); */
+/*   let mut response = reply.into_response();
   let headers = response.headers_mut();
-  headers.insert(warp::http::header::ACCESS_CONTROL_ALLOW_ORIGIN, HeaderValue::from_static("*"));
-  Ok(response)
+  headers.insert(warp::http::header::ACCESS_CONTROL_ALLOW_ORIGIN, HeaderValue::from_static("*")); */
+  Ok(warp::reply::json(&message))
 }
 async fn handle_post(my_data: Message) -> Result<impl warp::Reply, Infallible> {
     println!("Received data: {:?}", my_data.vector);
     handle_connection(my_data.vector.clone());
     
-  
+  /* 
     let reply =  warp::reply::json(&my_data);
     let mut response = reply.into_response();
     let headers = response.headers_mut();
-    headers.insert(warp::http::header::ACCESS_CONTROL_ALLOW_ORIGIN, HeaderValue::from_static("*"));
-    Ok(response)
+    headers.insert(warp::http::header::ACCESS_CONTROL_ALLOW_ORIGIN, HeaderValue::from_static("*")); */
+    Ok(warp::reply::json(&my_data))
 }
